@@ -45,7 +45,7 @@ if clientID!=-1:
     visionSensor = [-1, -1]
     numOfBottomSensor = 2
     visionSensorReading = [False,False]
-    Velocity = 10
+    Velocity = 1
 
     #Getting Object Handle
     FrontLeftMotorHandle, FrontLeftMotor = sim.simxGetObjectHandle(clientID, FLM, sim.simx_opmode_blocking)
@@ -85,7 +85,7 @@ if clientID!=-1:
         sim.simxSetJointTargetVelocity(clientID, RearLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, RearRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
 
-        print("visionSensorReading: ",visionSensorReading)
+        print("visionSensorReading: ", visionSensorReading)
 
 
 
@@ -98,3 +98,9 @@ if clientID!=-1:
 else:
     print ('Failed connecting to remote API server')
 print ('Program ended')
+
+def rotateRight():
+    Velocity = 1
+    rotateRobotRight = True
+    while rotateRobotRight:
+        rotateRobotRight = False
