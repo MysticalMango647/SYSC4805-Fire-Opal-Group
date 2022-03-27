@@ -28,6 +28,46 @@ except:
 print ('Program started')
 sim.simxFinish(-1) # just in case, close all opened connections
 clientID=sim.simxStart('127.0.0.1',19999,True,True,5000,5) # Connect to CoppeliaSim
+
+
+def rotateRight():
+    Velocity = 5
+    rightWheelVelocity = 2.5
+    leftWheelVelocity = -2.5
+    rotateRobotRight = True
+    print("Rotate Right Called")
+    while rotateRobotRight:
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+        time.sleep(2)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
+        time.sleep(1)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+        time.sleep(2)
+        rotateRobotRight = False
+
+def rotateLeft():
+    Velocity = 5
+    rightWheelVelocity = -2.5
+    leftWheelVelocity = 2.5
+    rotateRobotLeft = True
+    print("Rotate Left Called")
+    while rotateRobotLeft:
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+        time.sleep(2)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
+        time.sleep(1)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+        time.sleep(2)
+        rotateRobotLeft = False
+
+
+
 if clientID!=-1:
     print ('Connected to remote API server')
     sim.simxAddStatusbarMessage(clientID, 'Hello CoppeliaSim! -Fire Opal Team', sim.simx_opmode_oneshot)
@@ -61,7 +101,7 @@ if clientID!=-1:
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 0.25
+        velocity = 5
         floorReading = [0,0]
         #vision sensor code
         for i in range(0, numOfBottomSensor, 1):
@@ -81,11 +121,9 @@ if clientID!=-1:
             adjustSpeedBy = 0.5
 
         if (floorReading[0] == 1):
-            rightSideVelocity = velocity * adjustSpeedBy
-            leftSideVelocity = -velocity * adjustSpeedBy
-        if (floorReading[0] == 1):
-            rightSideVelocity = -velocity * adjustSpeedBy
-            leftSideVelocity = velocity * adjustSpeedBy
+            rotateRight()
+        if (floorReading[1] == 1):
+            rotateLeft()
 
         #proximity sensor code
 
@@ -115,10 +153,7 @@ if clientID!=-1:
 
 else:
     print ('Failed connecting to remote API server')
+
 print ('Program ended')
 
-def rotateRight():
-    Velocity = 1
-    rotateRobotRight = True
-    while rotateRobotRight:
-        rotateRobotRight = False
+
