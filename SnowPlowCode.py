@@ -30,13 +30,17 @@ sim.simxFinish(-1) # just in case, close all opened connections
 clientID=sim.simxStart('127.0.0.1',19999,True,True,5000,5) # Connect to CoppeliaSim
 
 
-def rotateRight():
-    Velocity = 5
-    rightWheelVelocity = 2.5
-    leftWheelVelocity = -2.5
-    rotateRobotRight = True
-    print("Rotate Right Called")
-    while rotateRobotRight:
+
+def rotateRobot(direction):
+    Velocity = 1
+    if (direction == True):
+        rightWheelVelocity = .5
+        leftWheelVelocity = -.5
+    if (direction == False):
+        rightWheelVelocity = -.5
+        leftWheelVelocity = .5
+    rotatingRobot = True
+    while rotatingRobot:
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
         time.sleep(2)
@@ -46,27 +50,7 @@ def rotateRight():
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
         time.sleep(2)
-        rotateRobotRight = False
-
-def rotateLeft():
-    Velocity = 5
-    rightWheelVelocity = -2.5
-    leftWheelVelocity = 2.5
-    rotateRobotLeft = True
-    print("Rotate Left Called")
-    while rotateRobotLeft:
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-        time.sleep(2)
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
-        time.sleep(1)
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-        time.sleep(2)
-        rotateRobotLeft = False
-
-
+        rotatingRobot = False
 
 if clientID!=-1:
     print ('Connected to remote API server')
@@ -91,6 +75,9 @@ if clientID!=-1:
     visionSensorReading = [False,False]
     Velocity = 1
 
+    turnRight = True
+    turnLeft = False
+
     #Getting Object Handle
     FrontLeftMotorHandle, FrontLeftMotor = sim.simxGetObjectHandle(clientID, FLM, sim.simx_opmode_blocking)
     FrontRightMotorHandle, FrontRightMotor = sim.simxGetObjectHandle(clientID, FRM, sim.simx_opmode_blocking)
@@ -101,7 +88,7 @@ if clientID!=-1:
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 5
+        velocity = 1
         floorReading = [0,0]
         #vision sensor code
         for i in range(0, numOfBottomSensor, 1):
@@ -109,21 +96,26 @@ if clientID!=-1:
             resultFloorSensor, visionSensorReading, auxPackets=sim.simxReadVisionSensor(clientID,visionSensor[i],sim.simx_opmode_blocking)
             print("auxPackets: ", auxPackets)
             #print("visionSensorReading: ",visionSensorReading)
-            print("resultFloorSensor: ",resultFloorSensor)
+            #print("resultFloorSensor: ",resultFloorSensor)
             #if (resultFloorSensor>=0):
             if (visionSensorReading > -1):
-                if (auxPackets[0][1] <0.8):
+                print("Vision Sensor Reading", visionSensorReading)
+                if (auxPackets[0][1] < .7):
                     floorReading[i] = 1
+                    print("line detected")
                 else:
                     floorReading[i] = 0
+
             rightSideVelocity = velocity
             leftSideVelocity = velocity
             adjustSpeedBy = 0.5
-
+            print(floorReading)
         if (floorReading[0] == 1):
-            rotateRight()
+            print("right sensor detected line")
+            rotateRobot(turnRight)
         if (floorReading[1] == 1):
-            rotateLeft()
+            print("left sensor detected line")
+            rotateRobot(turnLeft)
 
         #proximity sensor code
 
@@ -137,7 +129,7 @@ if clientID!=-1:
 
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
-        time.sleep(random.randrange(10, 60, 20) / 20)
+        #time.sleep(random.randrange(10, 60, 20) / 20)
         #sim.simxSetJointTargetVelocity(clientID, RearLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         #sim.simxSetJointTargetVelocity(clientID, RearRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
 
