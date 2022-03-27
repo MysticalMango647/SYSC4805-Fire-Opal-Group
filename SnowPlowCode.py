@@ -34,33 +34,36 @@ clientID=sim.simxStart('127.0.0.1',19999,True,True,5000,5) # Connect to Coppelia
 def rotateRobot(direction):
     Velocity = 1
     if (direction == True):
-        rightWheelVelocity = .5
-        leftWheelVelocity = -.5
+        rightWheelVelocity = .5 * velocity
+        leftWheelVelocity = -.5 * velocity
+        print("turning right")
     if (direction == False):
-        rightWheelVelocity = -.5
-        leftWheelVelocity = .5
+        rightWheelVelocity = -.5 * velocity
+        leftWheelVelocity = .5 * velocity
+        print("turning left")
     rotatingRobot = True
-    while rotatingRobot:
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-        time.sleep(2)
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
-        time.sleep(1)
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-        time.sleep(4)
-        rotatingRobot = False
+
+    sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+    sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+    time.sleep(2)
+    sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
+    sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
+    time.sleep(1)
+    sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
+    sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
+    time.sleep(2)
+
 
 def dumpSnow():
     dumpingsnow = True
+    global velocity
     while dumpingsnow:
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, 1, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, 1, sim.simx_opmode_blocking)
-        time.sleep(2)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
+        time.sleep(1)
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -Velocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, -Velocity, sim.simx_opmode_blocking)
-        time.sleep(2)
+        time.sleep(10)
         dumpingsnow = False
 
 
@@ -101,7 +104,7 @@ if clientID!=-1:
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 1
+        velocity = 5
         floorReading = [0,0]
         #vision sensor code
         for i in range(0, numOfBottomSensor, 1):
@@ -128,11 +131,8 @@ if clientID!=-1:
         if (floorReading[0] == 1 or floorReading[1] == 1):
             print("both sensors detected line")
             dumpSnow()
-            if(floorReading[0] == 1):
-                rotateRobot(turnRight)
+            rotateRobot(turnRight)
 
-            if(floorReading[1] == 1):
-                rotateRobot(turnLeft)
 
 
 
