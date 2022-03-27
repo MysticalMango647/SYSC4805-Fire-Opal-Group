@@ -78,6 +78,7 @@ if clientID!=-1:
     turnRight = True
     turnLeft = False
 
+
     #Getting Object Handle
     FrontLeftMotorHandle, FrontLeftMotor = sim.simxGetObjectHandle(clientID, FLM, sim.simx_opmode_blocking)
     FrontRightMotorHandle, FrontRightMotor = sim.simxGetObjectHandle(clientID, FRM, sim.simx_opmode_blocking)
