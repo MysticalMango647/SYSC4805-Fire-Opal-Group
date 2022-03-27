@@ -8,7 +8,10 @@
 #
 # IMPORTANT: for each successful call to simxStart, there
 # should be a corresponding call to simxFinish at the end!
-import time
+import time as time
+import math
+import random
+
 try:
     import sim
 except:
@@ -42,6 +45,7 @@ if clientID!=-1:
     RRM = "Rear_Right_Motor"
     BLS = "Bottom_Left_Sensor"
     BRS = "Bottom_Right_Sensor"
+    PS = "Proximity_sensor"
     visionSensor = [-1, -1]
     numOfBottomSensor = 2
     visionSensorReading = [False,False]
@@ -54,10 +58,12 @@ if clientID!=-1:
     RearRightMotorHandle, RearRightMotor = sim.simxGetObjectHandle(clientID, RRM, sim.simx_opmode_blocking)
     visionSensorLeftHandle, visionSensor[0] = sim.simxGetObjectHandle(clientID, BLS, sim.simx_opmode_blocking)
     visionSensorRightHandle, visionSensor[1] = sim.simxGetObjectHandle(clientID, BRS, sim.simx_opmode_blocking)
+    proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 1
+        velocity = 0.25
         floorReading = [0,0]
+        #vision sensor code
         for i in range(0, numOfBottomSensor, 1):
             print("reading floor sensors")
             resultFloorSensor, visionSensorReading, auxPackets=sim.simxReadVisionSensor(clientID,visionSensor[i],sim.simx_opmode_blocking)
@@ -73,6 +79,7 @@ if clientID!=-1:
             rightSideVelocity = velocity
             leftSideVelocity = velocity
             adjustSpeedBy = 0.5
+
         if (floorReading[0] == 1):
             rightSideVelocity = velocity * adjustSpeedBy
             leftSideVelocity = -velocity * adjustSpeedBy
@@ -80,10 +87,21 @@ if clientID!=-1:
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
 
+        #proximity sensor code
+
+        RC, proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, prox_sensor, sim.simx_opmode_blocking)
+        print("proximity dected: ", proximdetect)
+        adjustSpeedBy = 0.5
+
+        if proximdetect:
+            rightSideVelocity = -velocity * adjustSpeedBy
+            leftSideVelocity = velocity * adjustSpeedBy
+
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, RearLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, RearRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
+        time.sleep(random.randrange(10, 60, 20) / 20)
+        #sim.simxSetJointTargetVelocity(clientID, RearLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
+        #sim.simxSetJointTargetVelocity(clientID, RearRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
 
         print("visionSensorReading: ", visionSensorReading)
 
