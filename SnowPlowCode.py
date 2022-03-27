@@ -49,8 +49,20 @@ def rotateRobot(direction):
         time.sleep(1)
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-        time.sleep(2)
+        time.sleep(4)
         rotatingRobot = False
+
+def dumpSnow():
+    dumpingsnow = True
+    while dumpingsnow:
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, 1, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, 1, sim.simx_opmode_blocking)
+        time.sleep(2)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -Velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, -Velocity, sim.simx_opmode_blocking)
+        time.sleep(2)
+        dumpingsnow = False
+
 
 if clientID!=-1:
     print ('Connected to remote API server')
@@ -113,15 +125,13 @@ if clientID!=-1:
             print(floorReading)
 
 
-        if (floorReading[0] == 1 and floorReading[1] == 1):
+        if (floorReading[0] == 1 or floorReading[1] == 1):
             print("both sensors detected line")
-            rotateRobot(turnRight)
-        else:
-            if (floorReading[0] == 1):
-                print("right sensor detected line")
+            dumpSnow()
+            if(floorReading[0] == 1):
                 rotateRobot(turnRight)
-            if (floorReading[1] == 1):
-                print("left sensor detected line")
+
+            if(floorReading[1] == 1):
                 rotateRobot(turnLeft)
 
 
