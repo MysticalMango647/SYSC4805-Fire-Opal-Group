@@ -85,6 +85,8 @@ if clientID!=-1:
     BLS = "Bottom_Left_Sensor"
     BRS = "Bottom_Right_Sensor"
     PS = "Proximity_sensor"
+    LPS = "Left_Proximity_sensor"
+    RPS = "Right_Proximity_sensor"
     visionSensor = [-1, -1]
     numOfBottomSensor = 2
     visionSensorReading = [False,False]
@@ -102,6 +104,8 @@ if clientID!=-1:
     visionSensorLeftHandle, visionSensor[0] = sim.simxGetObjectHandle(clientID, BLS, sim.simx_opmode_blocking)
     visionSensorRightHandle, visionSensor[1] = sim.simxGetObjectHandle(clientID, BRS, sim.simx_opmode_blocking)
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
+    LeftproximitySensorHandle, Left_prox_sensor = sim.simxGetObjectHandle(clientID, LPS, sim.simx_opmode_blocking)
+    LeftproximitySensorHandle, Right_prox_sensor = sim.simxGetObjectHandle(clientID, RPS, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
         velocity = 5
@@ -139,12 +143,23 @@ if clientID!=-1:
         #proximity sensor code
 
         RC, proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, prox_sensor, sim.simx_opmode_blocking)
+        RC, left_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Left_prox_sensor, sim.simx_opmode_blocking)
+        RC, right_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Right_prox_sensor, sim.simx_opmode_blocking)
         print("proximity dected: ", proximdetect)
         adjustSpeedBy = 0.5
 
         if proximdetect:
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
+
+        if left_proximdetect:
+            rightSideVelocity = -velocity * adjustSpeedBy
+            leftSideVelocity = velocity * adjustSpeedBy
+
+        if right_proximdetect:
+            rightSideVelocity = -velocity * adjustSpeedBy
+            leftSideVelocity = velocity * adjustSpeedBy
+
 
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
