@@ -111,12 +111,20 @@ if clientID!=-1:
             leftSideVelocity = velocity
             adjustSpeedBy = 0.5
             print(floorReading)
-        if (floorReading[0] == 1):
-            print("right sensor detected line")
+
+
+        if (floorReading[0] == 1 and floorReading[1] == 1):
+            print("both sensors detected line")
             rotateRobot(turnRight)
-        if (floorReading[1] == 1):
-            print("left sensor detected line")
-            rotateRobot(turnLeft)
+        else:
+            if (floorReading[0] == 1):
+                print("right sensor detected line")
+                rotateRobot(turnRight)
+            if (floorReading[1] == 1):
+                print("left sensor detected line")
+                rotateRobot(turnLeft)
+
+
 
         #proximity sensor code
 
