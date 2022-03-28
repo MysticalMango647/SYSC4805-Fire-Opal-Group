@@ -90,8 +90,6 @@ if clientID!=-1:
     timeout_start = time.time()
     FLM = "Front_Left_Motor"
     FRM = "Front_Right_Motor"
-    RLM = "Rear_Left_Motor"
-    RRM = "Rear_Right_Motor"
     BLS = "Bottom_Left_Sensor"
     BRS = "Bottom_Right_Sensor"
     PS = "Proximity_sensor"
@@ -110,8 +108,6 @@ if clientID!=-1:
     #Getting Object Handle
     FrontLeftMotorHandle, FrontLeftMotor = sim.simxGetObjectHandle(clientID, FLM, sim.simx_opmode_blocking)
     FrontRightMotorHandle, FrontRightMotor = sim.simxGetObjectHandle(clientID, FRM, sim.simx_opmode_blocking)
-    RearLeftMotorHandle, RearLeftMotor = sim.simxGetObjectHandle(clientID, RLM, sim.simx_opmode_blocking)
-    RearRightMotorHandle, RearRightMotor = sim.simxGetObjectHandle(clientID, RRM, sim.simx_opmode_blocking)
     visionSensorLeftHandle, visionSensorLeft = sim.simxGetObjectHandle(clientID, BLS, sim.simx_opmode_blocking)
     visionSensorRightHandle, visionSensorRight = sim.simxGetObjectHandle(clientID, BRS, sim.simx_opmode_blocking)
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
