@@ -42,7 +42,7 @@ def doa180():
         doinga180 = False
 
 def rotateRobot(direction):
-    Velocity = 1
+    global velocity
     if (direction == True):
         rightWheelVelocity = .5 * velocity
         leftWheelVelocity = -.5 * velocity
@@ -97,6 +97,7 @@ if clientID!=-1:
     PS = "Proximity_sensor"
     LPS = "Left_Proximity_sensor"
     RPS = "Right_Proximity_sensor"
+    RB = "Robot_Body"
     visionSensor = [-1, -1]
     numOfBottomSensor = 2
     visionSensorReading = [False,False]
@@ -116,6 +117,7 @@ if clientID!=-1:
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
     LeftproximitySensorHandle, Left_prox_sensor = sim.simxGetObjectHandle(clientID, LPS, sim.simx_opmode_blocking)
     LeftproximitySensorHandle, Right_prox_sensor = sim.simxGetObjectHandle(clientID, RPS, sim.simx_opmode_blocking)
+    RobotBodyHandle, RobotBody = sim.simxGetObjectHandle(clientID, RB, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
         velocity = 5
@@ -140,6 +142,12 @@ if clientID!=-1:
         leftSideVelocity = velocity
         adjustSpeedBy = 0.5
         print(floorReading)
+
+        #Orientation of Robot Detect
+        RC, eulerAngles=sim.simxGetObjectOrientation(clientID,RobotBody, sim.sim_handle_parent, sim.simx_opmode_blocking)
+        print(eulerAngles)
+
+
 
         #proximity sensor code
         RC, proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, prox_sensor, sim.simx_opmode_blocking)
