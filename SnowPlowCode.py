@@ -45,13 +45,13 @@ def rotateRobot(direction):
 
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-    time.sleep(2)
+    time.sleep(1)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
-    time.sleep(1)
+    time.sleep(0.5)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-    time.sleep(2)
+    time.sleep(1)
 
 
 def dumpSnow():
@@ -133,9 +133,7 @@ if clientID!=-1:
             print(floorReading)
 
 
-
-        if ((floorReading[0] == 1 or floorReading[1] == 1) and dobounceFloorSensorCounter == 3):
-        if ((floorReading[0] == 1 or floorReading[1] == 1) and dobounceFloorSensorCounter == 3):
+        if (floorReading[0] == 1 or floorReading[1] == 1):
             print("both sensors detected line")
             dumpSnow()
             rotateRobot(turnRight)
@@ -153,7 +151,6 @@ if clientID!=-1:
         adjustSpeedBy = 0.5
 
         if proximdetect:
-
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
 
