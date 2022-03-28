@@ -29,7 +29,17 @@ print ('Program started')
 sim.simxFinish(-1) # just in case, close all opened connections
 clientID=sim.simxStart('127.0.0.1',19999,True,True,5000,5) # Connect to CoppeliaSim
 
+sensorArray = [False, False, False, False]
 
+def doa180():
+    global velocity
+    doinga180 = True
+    while doinga180:
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
+        numberRandomToSleep = random.randrange(5, 15)/10
+        time.sleep(numberRandomToSleep)
+        doinga180 = False
 
 def rotateRobot(direction):
     Velocity = 1
@@ -101,8 +111,8 @@ if clientID!=-1:
     FrontRightMotorHandle, FrontRightMotor = sim.simxGetObjectHandle(clientID, FRM, sim.simx_opmode_blocking)
     RearLeftMotorHandle, RearLeftMotor = sim.simxGetObjectHandle(clientID, RLM, sim.simx_opmode_blocking)
     RearRightMotorHandle, RearRightMotor = sim.simxGetObjectHandle(clientID, RRM, sim.simx_opmode_blocking)
-    visionSensorLeftHandle, visionSensor[0] = sim.simxGetObjectHandle(clientID, BLS, sim.simx_opmode_blocking)
-    visionSensorRightHandle, visionSensor[1] = sim.simxGetObjectHandle(clientID, BRS, sim.simx_opmode_blocking)
+    visionSensorLeftHandle, visionSensorLeft = sim.simxGetObjectHandle(clientID, BLS, sim.simx_opmode_blocking)
+    visionSensorRightHandle, visionSensorRight = sim.simxGetObjectHandle(clientID, BRS, sim.simx_opmode_blocking)
     proximitySensorHandle, prox_sensor = sim.simxGetObjectHandle(clientID, PS, sim.simx_opmode_blocking)
     LeftproximitySensorHandle, Left_prox_sensor = sim.simxGetObjectHandle(clientID, LPS, sim.simx_opmode_blocking)
     LeftproximitySensorHandle, Right_prox_sensor = sim.simxGetObjectHandle(clientID, RPS, sim.simx_opmode_blocking)
@@ -111,58 +121,74 @@ if clientID!=-1:
         velocity = 5
         floorReading = [0,0]
         #vision sensor code
-        for i in range(0, numOfBottomSensor, 1):
-            print("reading floor sensors")
-            resultFloorSensor, visionSensorReading, auxPackets=sim.simxReadVisionSensor(clientID,visionSensor[i],sim.simx_opmode_blocking)
-            print("auxPackets: ", auxPackets)
-            #print("visionSensorReading: ",visionSensorReading)
-            #print("resultFloorSensor: ",resultFloorSensor)
-            #if (resultFloorSensor>=0):
-            if (visionSensorReading > -1):
-                print("Vision Sensor Reading", visionSensorReading)
-                if (auxPackets[0][1] < .7):
-                    floorReading[i] = 1
-                    print("line detected")
-                    dobounceFloorSensorCounter += 1
-                else:
-                    floorReading[i] = 0
+        resultFloorSensor, visionSensorReadingLeft, auxPacketLeft = sim.simxReadVisionSensor(clientID, visionSensorLeft,
+                                                                                             sim.simx_opmode_blocking)
+        resultFloorSensor, visionSensorReadingRight, auxPacketRight = sim.simxReadVisionSensor(clientID,
+                                                                                               visionSensorRight,
+                                                                                               sim.simx_opmode_blocking)
+        # print(auxPacketLeft)
+        # print(auxPacketRight)
+        if (auxPacketLeft[0][1] < 0.7):
+            floorReading[0] = 1
+        elif (auxPacketRight[0][1] < 0.7):
+            floorReading[1] = 1
+        else:
+            floorReading[0] = 0
+            floorReading[1] = 0
 
-            rightSideVelocity = velocity
-            leftSideVelocity = velocity
-            adjustSpeedBy = 0.5
-            print(floorReading)
-
-
-        if (floorReading[0] == 1 or floorReading[1] == 1):
-            print("both sensors detected line")
-            dumpSnow()
-            rotateRobot(turnRight)
-            dobounceFloorSensorCounter = 0
-
-
-
+        rightSideVelocity = velocity
+        leftSideVelocity = velocity
+        adjustSpeedBy = 0.5
+        print(floorReading)
 
         #proximity sensor code
-
         RC, proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, prox_sensor, sim.simx_opmode_blocking)
         RC, left_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Left_prox_sensor, sim.simx_opmode_blocking)
         RC, right_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Right_prox_sensor, sim.simx_opmode_blocking)
         print("proximity dected: ", proximdetect)
         adjustSpeedBy = 0.5
 
-        if proximdetect:
-            rightSideVelocity = -velocity * adjustSpeedBy
-            leftSideVelocity = velocity * adjustSpeedBy
+        if (floorReading[0] == 1 or floorReading[1] == 1):
+            sensorArray[0] = True
 
-        if left_proximdetect:
-            print("left front sensor detect")
-            rightSideVelocity = -velocity * adjustSpeedBy
-            leftSideVelocity = velocity * adjustSpeedBy
+        sensorArray[1] = proximdetect
+        sensorArray[2] = left_proximdetect
+        sensorArray[3] = right_proximdetect
+        count = 0
 
-        if right_proximdetect:
-            print("right front sensor detect")
-            rightSideVelocity = -velocity * adjustSpeedBy
-            leftSideVelocity = velocity * adjustSpeedBy
+        for i in range(len(sensorArray)):
+            if sensorArray[i] == True:
+                count += 1
+
+        if (count > 1):
+            if (floorReading[0] == 1 or floorReading[1] == 1):
+                print("both sensors detected line")
+                dumpSnow()
+                rotateRobot(turnRight)
+                dobounceFloorSensorCounter = 0
+            else:
+                doa180()
+
+        else:
+            if proximdetect:
+                rightSideVelocity = -velocity * adjustSpeedBy
+                leftSideVelocity = velocity * adjustSpeedBy
+
+            if left_proximdetect:
+                print("left front sensor detect")
+                rightSideVelocity = -velocity * adjustSpeedBy
+                leftSideVelocity = velocity * adjustSpeedBy
+
+            if right_proximdetect:
+                print("right front sensor detect")
+                rightSideVelocity = -velocity * adjustSpeedBy
+                leftSideVelocity = velocity * adjustSpeedBy
+
+            if (floorReading[0] == 1 or floorReading[1] == 1):
+                print("both sensors detected line")
+                dumpSnow()
+                rotateRobot(turnRight)
+                dobounceFloorSensorCounter = 0
 
 
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
