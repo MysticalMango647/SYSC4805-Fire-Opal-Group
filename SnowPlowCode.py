@@ -76,7 +76,7 @@ if clientID!=-1:
     res,objs=sim.simxGetObjects(clientID,sim.sim_handle_all,sim.simx_opmode_blocking)
 
     #Variable Declaration
-    timeout = 150 #5 minutes simulation time
+    timeout = 300 #5 minutes simulation time
     timeout_start = time.time()
     FLM = "Front_Left_Motor"
     FRM = "Front_Right_Motor"
@@ -94,7 +94,7 @@ if clientID!=-1:
 
     turnRight = True
     turnLeft = False
-
+    dobounceFloorSensorCounter = 0
 
     #Getting Object Handle
     FrontLeftMotorHandle, FrontLeftMotor = sim.simxGetObjectHandle(clientID, FLM, sim.simx_opmode_blocking)
@@ -123,6 +123,7 @@ if clientID!=-1:
                 if (auxPackets[0][1] < .7):
                     floorReading[i] = 1
                     print("line detected")
+                    dobounceFloorSensorCounter += 1
                 else:
                     floorReading[i] = 0
 
@@ -132,10 +133,12 @@ if clientID!=-1:
             print(floorReading)
 
 
-        if (floorReading[0] == 1 or floorReading[1] == 1):
+
+        if ((floorReading[0] == 1 or floorReading[1] == 1) and dobounceFloorSensorCounter == 3):
             print("both sensors detected line")
             dumpSnow()
             rotateRobot(turnRight)
+            dobounceFloorSensorCounter = 0
 
 
 
@@ -149,14 +152,17 @@ if clientID!=-1:
         adjustSpeedBy = 0.5
 
         if proximdetect:
+
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
 
         if left_proximdetect:
+            print("left front sensor detect")
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
 
         if right_proximdetect:
+            print("right front sensor detect")
             rightSideVelocity = -velocity * adjustSpeedBy
             leftSideVelocity = velocity * adjustSpeedBy
 
