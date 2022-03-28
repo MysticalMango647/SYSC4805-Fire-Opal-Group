@@ -37,7 +37,7 @@ def doa180():
     while doinga180:
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -velocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
-        numberRandomToSleep = random.randrange(5, 15)/10
+        numberRandomToSleep = random.randrange(3, 8)/10
         time.sleep(numberRandomToSleep)
         doinga180 = False
 
@@ -56,8 +56,8 @@ def rotateRobot(direction):
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
     time.sleep(1)
-    sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, Velocity, sim.simx_opmode_blocking)
-    sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, Velocity, sim.simx_opmode_blocking)
+    sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
+    sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
     time.sleep(0.5)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
@@ -71,9 +71,9 @@ def dumpSnow():
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
         time.sleep(1)
-        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -Velocity, sim.simx_opmode_blocking)
-        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, -Velocity, sim.simx_opmode_blocking)
-        time.sleep(10)
+        sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -velocity, sim.simx_opmode_blocking)
+        sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, -velocity, sim.simx_opmode_blocking)
+        time.sleep(3)
         dumpingsnow = False
 
 
@@ -101,7 +101,7 @@ if clientID!=-1:
     visionSensor = [-1, -1]
     numOfBottomSensor = 2
     visionSensorReading = [False,False]
-    Velocity = 1
+    #Velocity = 10
 
     turnRight = True
     turnLeft = False
@@ -120,7 +120,7 @@ if clientID!=-1:
     RobotBodyHandle, RobotBody = sim.simxGetObjectHandle(clientID, RB, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 5
+        velocity = 10
         floorReading = [0,0]
         #vision sensor code
         resultFloorSensor, visionSensorReadingLeft, auxPacketLeft = sim.simxReadVisionSensor(clientID, visionSensorLeft,
@@ -179,18 +179,19 @@ if clientID!=-1:
 
         else:
             if proximdetect:
+                print("prox detected")
                 rightSideVelocity = -velocity * adjustSpeedBy
                 leftSideVelocity = velocity * adjustSpeedBy
 
             if left_proximdetect:
                 print("left front sensor detect")
-                rightSideVelocity = -velocity * adjustSpeedBy
-                leftSideVelocity = velocity * adjustSpeedBy
+                rightSideVelocity = velocity * adjustSpeedBy
+                leftSideVelocity = -velocity * adjustSpeedBy
 
             if right_proximdetect:
                 print("right front sensor detect")
-                rightSideVelocity = -velocity * adjustSpeedBy
-                leftSideVelocity = velocity * adjustSpeedBy
+                rightSideVelocity = velocity * adjustSpeedBy
+                leftSideVelocity = -velocity * adjustSpeedBy
 
             if (floorReading[0] == 1 or floorReading[1] == 1):
                 print("both sensors detected line")
