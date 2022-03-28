@@ -135,6 +135,7 @@ if clientID!=-1:
 
 
         if ((floorReading[0] == 1 or floorReading[1] == 1) and dobounceFloorSensorCounter == 3):
+        if ((floorReading[0] == 1 or floorReading[1] == 1) and dobounceFloorSensorCounter == 3):
             print("both sensors detected line")
             dumpSnow()
             rotateRobot(turnRight)
