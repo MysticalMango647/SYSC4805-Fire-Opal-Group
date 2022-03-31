@@ -44,24 +44,24 @@ def doa180():
 def rotateRobot(direction):
     global velocity
     if (direction == True):
-        rightWheelVelocity = .5 * velocity
-        leftWheelVelocity = -.5 * velocity
-        print("turning right")
-    if (direction == False):
         rightWheelVelocity = -.5 * velocity
         leftWheelVelocity = .5 * velocity
+        print("turning right")
+    if (direction == False):
+        rightWheelVelocity = .5 * velocity
+        leftWheelVelocity = -.5 * velocity
         print("turning left")
     rotatingRobot = True
 
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-    time.sleep(1)
+    time.sleep(0.5)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
-    time.sleep(0.5)
+    time.sleep(0.25)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-    time.sleep(1)
+    time.sleep(0.5)
 
 
 def dumpSnow():
@@ -116,7 +116,7 @@ if clientID!=-1:
     RobotBodyHandle, RobotBody = sim.simxGetObjectHandle(clientID, RB, sim.simx_opmode_blocking)
 
     while time.time() < timeout_start + timeout:
-        velocity = 10
+        velocity = 8
         floorReading = [0,0]
         #vision sensor code
         resultFloorSensor, visionSensorReadingLeft, auxPacketLeft = sim.simxReadVisionSensor(clientID, visionSensorLeft,
@@ -126,10 +126,14 @@ if clientID!=-1:
                                                                                                sim.simx_opmode_blocking)
         # print(auxPacketLeft)
         # print(auxPacketRight)
+        debounceFloorSensorCounter = 0
+
         if (auxPacketLeft[0][1] < 0.7):
             floorReading[0] = 1
+            debounceFloorSensorCounter += 1
         elif (auxPacketRight[0][1] < 0.7):
             floorReading[1] = 1
+            debounceFloorSensorCounter += 1
         else:
             floorReading[0] = 0
             floorReading[1] = 0
@@ -145,7 +149,7 @@ if clientID!=-1:
 
 
 
-        #proximity sensor code
+        #proximity  and vision sensor code
         RC, proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, prox_sensor, sim.simx_opmode_blocking)
         RC, left_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Left_prox_sensor, sim.simx_opmode_blocking)
         RC, right_proximdetect, DP, DOH, DSNV = sim.simxReadProximitySensor(clientID, Right_prox_sensor, sim.simx_opmode_blocking)
@@ -165,13 +169,19 @@ if clientID!=-1:
                 count += 1
 
         if (count > 1):
+
             if (floorReading[0] == 1 or floorReading[1] == 1):
-                print("both sensors detected line")
+                #print("both sensors detected line")
                 dumpSnow()
-                rotateRobot(turnRight)
-                dobounceFloorSensorCounter = 0
+                #rotateRobot(turnRight)
+                debounceFloorSensorCounter = 0
             else:
                 doa180()
+
+            if (floorReading[0] == 1):
+                rotateRobot(turnLeft)
+            elif (floorReading[1] == 1):
+                rotateRobot(turnRight)
 
         else:
             if proximdetect:
