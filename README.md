@@ -12,7 +12,7 @@ Presented to you by Fire Opal, a team of fourth year engineers at Carleton Unive
 
 The Objective of this project is to build a robot that efficiently clears snow off of the given highlighted path while tackling multiple challenges faced on the path using Coppeliasim. 
 
-To View the Robot Model, open snowplow.ttt
+To View the Robot Model, open SYSCBot.ttm
 
 SYSCBot.ttm contains the model file for the robot
 
