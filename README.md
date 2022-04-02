@@ -12,9 +12,13 @@ Presented to you by Fire Opal, a team of fourth year engineers at Carleton Unive
 
 The Objective of this project is to build a robot that efficiently clears snow off of the given highlighted path while tackling multiple challenges faced on the path using Coppeliasim. 
 
-To View the Robot Model, open snowplow.ttt
+To View the Robot Model, open SYSCBot.ttm
+
 SYSCBot.ttm contains the model file for the robot
+
 The code for the robot is stored in SnowPlowCode.py
+
 To run simulation: please run the coppeiliaSim Code first, then run python after, otherwise it will timeout. The files in the main directory contain the support api files for windows only.
+
 To test our robot in different maps, the folder "Robot on Training Maps" contains Fire Opal Robot on different maps provided from the class
 
