@@ -2,10 +2,29 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3fec10ae-59e6-4840-9280-79a138856ea4" name="Changes" comment="removed back wheels from code">
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/ProgressReportSequenceDiagram.drawio" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/ProgressReportSequenceDiagram.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/SYSC4805_L2_Group10_PROPOSAL.pdf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/StateChartProjectProgressReport.drawio" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/StateChartProjectProgressReport.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Proposal &amp; Progress Report Documentations/architecture.drawio" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Robot on Training Maps/Map2.ttt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Robot on Training Maps/Map3.ttt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Robot on Training Maps/Map4.ttt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Robot on Training Maps/Training_Map_1.ttt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map2.ttt" beforeDir="false" afterPath="$PROJECT_DIR$/Map2.ttt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Map3.ttt" beforeDir="false" afterPath="$PROJECT_DIR$/Map3.ttt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map2.ttt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map3.ttt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Map4.ttt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProgressReportSequenceDiagram.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProgressReportSequenceDiagram.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SYSC4805_L2_Group10_PROPOSAL.pdf" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/SnowPlowCode.py" beforeDir="false" afterPath="$PROJECT_DIR$/SnowPlowCode.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StateChartProjectProgressReport.drawio" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/StateChartProjectProgressReport.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Training_Map_1.ttt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/architecture.drawio" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

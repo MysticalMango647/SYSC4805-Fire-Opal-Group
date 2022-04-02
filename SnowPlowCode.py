@@ -31,6 +31,9 @@ clientID=sim.simxStart('127.0.0.1',19999,True,True,5000,5) # Connect to Coppelia
 
 sensorArray = [False, False, False, False]
 
+'''
+Doa180 will performat a robot do change its oreintation if it is stuck in one area with a lot of the sensors going off
+'''
 def doa180():
     global velocity
     doinga180 = True
@@ -41,6 +44,11 @@ def doa180():
         time.sleep(numberRandomToSleep)
         doinga180 = False
 
+'''
+Rotate Robot requires an input parameter for the direction, true is clockwise
+false is counter clockwise. The robot will turn, move forward a little bit
+then it will turn again so it starts a new line
+'''
 def rotateRobot(direction):
     global velocity
     if (direction == True):
@@ -58,22 +66,22 @@ def rotateRobot(direction):
     time.sleep(0.5)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
-    time.sleep(0.25)
+    time.sleep(0.4)
     sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftWheelVelocity, sim.simx_opmode_blocking)
     sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightWheelVelocity, sim.simx_opmode_blocking)
-    time.sleep(0.5)
+    time.sleep(0.65)
 
-
+'''dump function will move the robot forward out of the boundary and then move it back'''
 def dumpSnow():
     dumpingsnow = True
     global velocity
     while dumpingsnow:
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, velocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, velocity, sim.simx_opmode_blocking)
-        time.sleep(1)
+        time.sleep(0.3)
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, -velocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, -velocity, sim.simx_opmode_blocking)
-        time.sleep(3)
+        time.sleep(2)
         dumpingsnow = False
 
 
@@ -115,6 +123,7 @@ if clientID!=-1:
     LeftproximitySensorHandle, Right_prox_sensor = sim.simxGetObjectHandle(clientID, RPS, sim.simx_opmode_blocking)
     RobotBodyHandle, RobotBody = sim.simxGetObjectHandle(clientID, RB, sim.simx_opmode_blocking)
 
+    #set our entire code to run in a while loop that will stop at the 5 minute timer
     while time.time() < timeout_start + timeout:
         velocity = 8
         floorReading = [0,0]
@@ -124,10 +133,10 @@ if clientID!=-1:
         resultFloorSensor, visionSensorReadingRight, auxPacketRight = sim.simxReadVisionSensor(clientID,
                                                                                                visionSensorRight,
                                                                                                sim.simx_opmode_blocking)
-        # print(auxPacketLeft)
-        # print(auxPacketRight)
-        debounceFloorSensorCounter = 0
 
+        debounceFloorSensorCounter = 0
+        #checking the floor sensors on the robot, if either reach the black line
+        #we update our floorReading array to be 1 and treat it accordingly
         if (auxPacketLeft[0][1] < 0.7):
             floorReading[0] = 1
             debounceFloorSensorCounter += 1
@@ -138,12 +147,13 @@ if clientID!=-1:
             floorReading[0] = 0
             floorReading[1] = 0
 
+
         rightSideVelocity = velocity
         leftSideVelocity = velocity
         adjustSpeedBy = 0.5
         print(floorReading)
 
-        #Orientation of Robot Detect
+        #Orientation of Robot Detection
         RC, eulerAngles=sim.simxGetObjectOrientation(clientID,RobotBody, sim.sim_handle_parent, sim.simx_opmode_blocking)
         print(eulerAngles)
 
@@ -164,12 +174,13 @@ if clientID!=-1:
         sensorArray[3] = right_proximdetect
         count = 0
 
+        #Sensor Heiarchy code
         for i in range(len(sensorArray)):
             if sensorArray[i] == True:
                 count += 1
 
         if (count > 1):
-
+            #Floor reading detection dump snow and rotate robot according
             if (floorReading[0] == 1 or floorReading[1] == 1):
                 #print("both sensors detected line")
                 dumpSnow()
@@ -184,40 +195,38 @@ if clientID!=-1:
                 rotateRobot(turnRight)
 
         else:
+            #Center Proximity Detection
             if proximdetect:
                 print("prox detected")
                 rightSideVelocity = -velocity * adjustSpeedBy
                 leftSideVelocity = velocity * adjustSpeedBy
-
+            #Left Proximity Detection
             if left_proximdetect:
                 print("left front sensor detect")
-                rightSideVelocity = velocity * adjustSpeedBy
-                leftSideVelocity = -velocity * adjustSpeedBy
-
+                rightSideVelocity = -velocity * adjustSpeedBy
+                leftSideVelocity = velocity * adjustSpeedBy
+            # Right Proximity Detection
             if right_proximdetect:
                 print("right front sensor detect")
                 rightSideVelocity = velocity * adjustSpeedBy
                 leftSideVelocity = -velocity * adjustSpeedBy
-
+            #Floor Sensor Detection
             if (floorReading[0] == 1 or floorReading[1] == 1):
                 print("both sensors detected line")
                 dumpSnow()
                 rotateRobot(turnRight)
                 dobounceFloorSensorCounter = 0
 
-
+        #Set the robot velocity to go straight, or turn based on the proximity sensor readings
         sim.simxSetJointTargetVelocity(clientID, FrontLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
         sim.simxSetJointTargetVelocity(clientID, FrontRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
-        #time.sleep(random.randrange(10, 60, 20) / 20)
-        #sim.simxSetJointTargetVelocity(clientID, RearLeftMotor, leftSideVelocity, sim.simx_opmode_blocking)
-        #sim.simxSetJointTargetVelocity(clientID, RearRightMotor, rightSideVelocity, sim.simx_opmode_blocking)
-
-        print("visionSensorReading: ", visionSensorReading)
+        #print("visionSensorReading: ", visionSensorReading)
 
 
 
     # Before closing the connection to CoppeliaSim, make sure that the last command sent out had time to arrive. You can guarantee this with (for example):
     sim.simxGetPingTime(clientID)
+    #Robot will automatically stop simulation when 5 minute timer has been reached
     sim.simxStopSimulation(clientID, sim.simx_opmode_blocking)
     # Now close the connection to CoppeliaSim:
     sim.simxFinish(clientID)
